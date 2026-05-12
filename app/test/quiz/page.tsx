@@ -24,36 +24,45 @@ useEffect(() => {
     // quizId が取得できるまで待機（念のため）
     if (!quizId) return;
 
-    const fetchQuestions = async () => {
+ const fetchQuestions = async () => {
       setLoading(true);
       
-      // 1. URLのIDに応じて、CSVのchapter名と紐付け
-      let targetChapter = 'Grammar';
-      if (quizId === 'vocab-basic') targetChapter = 'Vocab-intro';
-      if (quizId === 'vocab-inter') targetChapter = 'Vocab-inter';
+      try {
+        // 1. ターゲットのチャプターを決定
+        let targetChapter = 'Grammar';
+        if (quizId === 'vocab-basic') targetChapter = 'Vocab-intro';
+        if (quizId === 'vocab-inter') targetChapter = 'Vocab-inter';
 
-      // 2. Supabaseからデータを取得
-      const { data, error } = await supabase
-        .from('questions')
-        .select('*')
-        .eq('category', 'LevelCheck')
-        .eq('chapter', targetChapter);
+        console.log('【Debug】リクエスト開始:', { targetChapter, quizId });
 
-      if (error) {
-        console.error('Error fetching questions:', error);
-      } else if (data && data.length > 0) {
-        // 3. 取得した全問題をシャッフル
-        const shuffled = [...data].sort(() => Math.random() - 0.5);
-        setQuestions(shuffled);
-      } else {
-        // データが0件だった場合の処理
-        setQuestions([]);
+        // 2. Supabaseから取得
+        const { data, error } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('category', 'LevelCheck')
+          .eq('chapter', targetChapter);
+
+        if (error) {
+          // 詳細なエラーをコンソールに出す（これで404の原因がわかります）
+          console.error('【Supabase Error】:', error.message, error.details, error.hint);
+        } else if (data && data.length > 0) {
+          console.log('【Success】データ取得成功:', data.length, '件');
+          const shuffled = [...data].sort(() => Math.random() - 0.5);
+          setQuestions(shuffled);
+        } else {
+          // データが0件だった場合
+          console.warn('【Warning】データが0件です。条件を確認してください:', targetChapter);
+          setQuestions([]);
+        }
+      } catch (err) {
+        console.error('【Fatal Error】通信自体に失敗しました:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchQuestions();
-  }, [quizId, supabase]); // supabase も依存配列に入れておくと警告が出なくなります
+  }, [quizId, supabase]);
 
   const handleAnswer = (index: number) => {
     if (isAnswered) return;
