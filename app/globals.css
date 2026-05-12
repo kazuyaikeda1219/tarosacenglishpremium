@@ -1,12 +1,8 @@
-/* これを試してみてください */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* @ts-ignore */
+@import "tailwindcss";
 
-/* もし @import "tailwindcss/base"; のように書いていたら、上記に書き換えます */
-
+/* 独自のスタイル */
 body {
-  /* 背景色を少し明るいグレーにして、カードの白を引き立たせます */
   background-color: #f9fafb; 
   color: #111827;
 }
