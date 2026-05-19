@@ -13,7 +13,7 @@ import Navbar from '@/components/Navbar';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
-export function DashboardContent() {
+function DashboardContent() {
   const [logs, setLogs] = useState<any[]>([]);
   const [totalProgress, setTotalProgress] = useState(0);
   const [user, setUser] = useState<any>(null);
