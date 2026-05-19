@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Flame, Clock, BarChart3, PlusCircle, PieChart as PieIcon, TrendingUp, BookOpen, Trash2, Map, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import Navbar from '@/components/Navbar';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
-export default function Dashboard() {
+export function DashboardContent() {
   const [logs, setLogs] = useState<any[]>([]);
   const [totalProgress, setTotalProgress] = useState(0);
   const [user, setUser] = useState<any>(null);
@@ -325,5 +325,12 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode, label: string
         <p className="text-2xl font-black text-gray-900 leading-none">{value}</p>
       </div>
     </div>
+  );
+}
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f8fafc]" />}>
+      <DashboardContent />
+    </Suspense>
   );
 }
