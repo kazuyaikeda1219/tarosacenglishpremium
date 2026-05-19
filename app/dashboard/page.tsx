@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Flame, Clock, BarChart3, PlusCircle, PieChart as PieIcon, TrendingUp, BookOpen, Trash2, Map } from 'lucide-react';
+import { Flame, Clock, BarChart3, PlusCircle, PieChart as PieIcon, TrendingUp, BookOpen, Trash2, Map, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid 
@@ -16,7 +17,9 @@ export default function Dashboard() {
   const [logs, setLogs] = useState<any[]>([]);
   const [totalProgress, setTotalProgress] = useState(0);
   const [user, setUser] = useState<any>(null);
+  const [showToast, setShowToast] = useState(false); // ✅ トースト表示フラグ
   const supabase = createClient();
+  const searchParams = useSearchParams();
 
   const TOTAL_ROADMAP_ITEMS = 145;
 
@@ -31,6 +34,15 @@ export default function Dashboard() {
     };
     initialize();
   }, []);
+
+  // ✅ ログイン直後のトースト表示
+  useEffect(() => {
+    if (searchParams.get('loggedIn') === 'true') {
+      setShowToast(true);
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const fetchLogs = async () => {
     const { data } = await supabase
@@ -122,6 +134,17 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <Navbar />
+
+      {/* ✅ ログイン完了トースト */}
+      <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
+        showToast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+      }`}>
+        <div className="flex items-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl">
+          <CheckCircle2 size={20} className="text-green-400 shrink-0" />
+          <p className="font-bold text-sm">ログインが完了しました 🎉</p>
+        </div>
+      </div>
+
       <div className="p-6 text-gray-800">
         <div className="max-w-2xl mx-auto">
           <header className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
@@ -148,7 +171,6 @@ export default function Dashboard() {
             </div>
           </header>
 
-          {/* ... Stats & Charts ... */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <StatCard icon={<Flame className="text-orange-500" />} label="Total Study Days" value={`${totalDays} Days`} />
             <StatCard icon={<Clock className="text-blue-500" />} label="Total Time" value={`${totalHours} hrs`} />
@@ -191,7 +213,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Form */}
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200 mb-10">
             <h3 className="text-xs font-bold mb-5 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
               <PlusCircle size={18} /> New Entry
@@ -248,7 +269,6 @@ export default function Dashboard() {
             </form>
           </div>
 
-          {/* Recent Activity */}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-5 border-b border-gray-100 flex justify-between items-center">
               <h3 className="font-bold text-gray-700">Recent Activity</h3>

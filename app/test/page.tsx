@@ -3,8 +3,8 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
-// アイコンを整理してインポート
-import { Book, GraduationCap, ArrowRight, Zap, BarChart3 } from 'lucide-react';
+// ClipboardCheck アイコンを追加インポート
+import { Book, GraduationCap, ArrowRight, Zap, BarChart3, ClipboardCheck } from 'lucide-react';
 
 const TEST_CATEGORIES = [
   {
@@ -14,8 +14,8 @@ const TEST_CATEGORIES = [
     description: '現在の実力を測定し、最適な学習プランを確認します。',
     items: [
       { name: '総合テスト（文法）', id: 'grammar-placement' },
-      { name: '総合テスト（単語・初級）', id: 'vocab-basic' }, // 追加
-      { name: '総合テスト（単語・中級）', id: 'vocab-inter' }, // 追加
+      { name: '総合テスト（単語・初級）', id: 'vocab-basic' },
+      { name: '総合テスト（単語・中級）', id: 'vocab-inter' },
     ]
   },
   {
@@ -38,6 +38,20 @@ const TEST_CATEGORIES = [
       { name: 'Mr.Evine - Ch.1', id: 'evine-c1' },
       { name: 'Mr.Evine - Ch.2', id: 'evine-c2' },
       { name: 'Evergreen - 関係代名詞', id: 'ever-rel' },
+    ]
+  },
+  {
+    id: 'progress-check',
+    title: 'Progress Check',
+    icon: <ClipboardCheck className="text-purple-500" />,
+    description: '定期的な進捗確認テストで、日々の成長を測定します。',
+    items: [
+      { name: 'プログレスチェックテスト 1', id: 'progress-1' },
+      { name: 'プログレスチェックテスト 2', id: 'progress-2' },
+      { name: 'プログレスチェックテスト 3', id: 'progress-3' },
+      { name: 'プログレスチェックテスト 4', id: 'progress-4' },
+      { name: 'プログレスチェックテスト 5', id: 'progress-5' },
+      { name: 'プログレスチェックテスト 6', id: 'progress-6' },
     ]
   }
 ];

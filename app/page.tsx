@@ -1,10 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 import { ArrowRight, CheckCircle, Star } from 'lucide-react';
 
 export default function WelcomePage() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  // ✅ ログイン済みならmypageへ自動リダイレクト
+  useEffect(() => {
+    const check = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) router.push('/mypage');
+    };
+    check();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       {/* ヒーローセクション */}
@@ -26,8 +40,8 @@ export default function WelcomePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link 
-                  href="/test" 
+                <Link
+                  href="/login"
                   className="bg-indigo-600 text-white px-8 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95"
                 >
                   学習を開始する <ArrowRight size={20} />
@@ -48,14 +62,11 @@ export default function WelcomePage() {
             {/* 写真エリア */}
             <div className="lg:w-1/2 mt-16 lg:mt-0">
               <div className="relative">
-                {/* 背景の装飾 */}
                 <div className="absolute -inset-4 bg-indigo-100 rounded-[3rem] rotate-3 opacity-50"></div>
-                
-                {/* 写真本体 */}
                 <div className="relative bg-white rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/5] border-8 border-white">
-                  <img 
-                    src="/tarosac-hero.jpg" 
-                    alt="Tarosac" 
+                  <img
+                    src="/tarosac-hero.jpg"
+                    alt="Tarosac"
                     className="w-full h-full object-cover object-top"
                   />
                 </div>

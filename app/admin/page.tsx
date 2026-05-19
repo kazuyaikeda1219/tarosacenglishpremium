@@ -251,9 +251,10 @@ export default function AdminDashboard() {
                       <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Weekly</p>
                       <p className="font-black text-blue-600">{student.weeklyHours}h</p>
                     </div>
-                    <button className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-blue-600 hover:text-white transition-all">
+                    {/* ボタンから個別詳細ページ（/admin/students/[id]）へのリンクへ変更 */}
+                    <Link href={`/admin/students/${student.id}`} className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-blue-600 hover:text-white transition-all">
                       <ChevronRight size={20} />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

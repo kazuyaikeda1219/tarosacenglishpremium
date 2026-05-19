@@ -17,27 +17,51 @@ interface VideoContent {
 const INITIAL_VIDEOS: VideoContent[] = [
   {
     id: '1',
-    title: '5分でわかる中学英文法',
-    category: 'Grammar',
-    thumbnail: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=400',
-    url: 'https://www.youtube.com/watch?v=xxxx',
-    description: '基本の5文型を視覚的に理解するための動画。'
+    title: 'Sample Video 1',
+    category: 'Listening',
+    thumbnail: 'https://img.youtube.com/vi/cuO8uPupzR8/hqdefault.jpg',
+    url: 'https://www.youtube.com/watch?v=cuO8uPupzR8',
+    description: 'Listening practice material.'
   },
   {
     id: '2',
-    title: 'ネイティブの発音矯正',
-    category: 'Pronunciation',
-    thumbnail: 'https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?auto=format&fit=crop&q=80&w=400',
-    url: 'https://www.youtube.com/watch?v=yyyy',
-    description: 'LとRの使い分けを徹底解説。シャドーイングに最適。'
+    title: 'Sample Video 2',
+    category: 'Speaking',
+    thumbnail: 'https://img.youtube.com/vi/Uuff5_nqIKs/hqdefault.jpg',
+    url: 'https://www.youtube.com/watch?v=Uuff5_nqIKs',
+    description: 'Speaking practice material.'
   },
   {
     id: '3',
-    title: '日常英会話フレーズ100',
+    title: 'Sample Video 3',
+    category: 'Grammar',
+    thumbnail: 'https://img.youtube.com/vi/e7FowwOG51g/hqdefault.jpg',
+    url: 'https://www.youtube.com/watch?v=e7FowwOG51g',
+    description: 'Grammar practice material.'
+  },
+  {
+    id: '4',
+    title: 'Sample Video 4',
+    category: 'Pronunciation',
+    thumbnail: 'https://img.youtube.com/vi/6_wfT9gXFn4/hqdefault.jpg',
+    url: 'https://www.youtube.com/watch?v=6_wfT9gXFn4',
+    description: 'Pronunciation practice material.'
+  },
+  {
+    id: '5',
+    title: 'Sample Video 5',
+    category: 'Listening',
+    thumbnail: 'https://img.youtube.com/vi/dKH9VSMDoYk/hqdefault.jpg',
+    url: 'https://www.youtube.com/watch?v=dKH9VSMDoYk',
+    description: 'Listening practice material.'
+  },
+  {
+    id: '6',
+    title: 'Sample Video 6',
     category: 'Speaking',
-    thumbnail: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400',
-    url: 'https://www.youtube.com/watch?v=zzzz',
-    description: '朝から晩まで使える基本フレーズの聞き流し。'
+    thumbnail: 'https://img.youtube.com/vi/UIkShhhCBhg/hqdefault.jpg',
+    url: 'https://www.youtube.com/watch?v=UIkShhhCBhg',
+    description: 'Speaking practice material.'
   },
 ];
 
@@ -116,22 +140,27 @@ export default function LibraryPage() {
                     key={video.id} 
                     className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 group"
                   >
-                    {/* サムネイルエリア */}
-                    <div className="relative aspect-video overflow-hidden">
-                      <img 
-                        src={video.thumbnail} 
-                        alt={video.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                        <PlayCircle className="text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" size={54} />
-                      </div>
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-white/90 backdrop-blur-sm text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm">
-                          {video.category}
-                        </span>
-                      </div>
-                    </div>
+{/* サムネイルエリア */}
+<a 
+  href={video.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="relative aspect-video overflow-hidden block"
+>
+  <img 
+    src={video.thumbnail} 
+    alt={video.title} 
+    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+  />
+  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+    <PlayCircle className="text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300" size={54} />
+  </div>
+  <div className="absolute top-4 left-4">
+    <span className="bg-white/90 backdrop-blur-sm text-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm">
+      {video.category}
+    </span>
+  </div>
+</a>
 
                     {/* コンテンツエリア */}
                     <div className="p-6">
