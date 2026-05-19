@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Map, BookOpen, Mic, Languages } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
+import Navbar from '@/components/Navbar';
 
 // --- スプレッドシートから抽出した全データ ---
 const ROADMAP_DATA = {
@@ -104,72 +105,75 @@ export default function Roadmap() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-10">
-          <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
-            <Map className="text-blue-600" /> Learning Roadmap
-          </h1>
-          <p className="text-gray-500 mt-2 font-medium">Track your mastery, Tarosac.</p>
-        </header>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="p-6 text-gray-800">
+        <div className="max-w-5xl mx-auto">
+          <header className="mb-10">
+            <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+              <Map className="text-blue-600" /> Learning Roadmap
+            </h1>
+            <p className="text-gray-500 mt-2 font-medium">Track your mastery, Tarosac.</p>
+          </header>
 
-        <div className="grid grid-cols-1 gap-12">
-          {Object.entries(ROADMAP_DATA).map(([key, section]) => {
-            const doneCount = section.items.filter(item => completedIds.has(item.id)).length;
-            const progress = Math.round((doneCount / section.items.length) * 100);
+          <div className="grid grid-cols-1 gap-12">
+            {Object.entries(ROADMAP_DATA).map(([key, section]) => {
+              const doneCount = section.items.filter(item => completedIds.has(item.id)).length;
+              const progress = Math.round((doneCount / section.items.length) * 100);
 
-            return (
-              <section key={key} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gray-50 rounded-2xl">{section.icon}</div>
-                    <div>
-                      <h2 className="text-xl font-black text-gray-900">{section.title}</h2>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{section.items.length} Items Total</p>
+              return (
+                <section key={key} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-gray-50 rounded-2xl">{section.icon}</div>
+                      <div>
+                        <h2 className="text-xl font-black text-gray-900">{section.title}</h2>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{section.items.length} Items Total</p>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 max-w-md">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm font-bold text-gray-600">{progress}% Mastered</span>
+                        <span className="text-sm font-bold text-blue-600">{doneCount} / {section.items.length}</span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div
+                          className="bg-blue-500 h-full transition-all duration-500 ease-out"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex-1 max-w-md">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-bold text-gray-600">{progress}% Mastered</span>
-                      <span className="text-sm font-bold text-blue-600">{doneCount} / {section.items.length}</span>
-                    </div>
-                    <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-blue-500 h-full transition-all duration-500 ease-out" 
-                        style={{ width: `${progress}%` }} 
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {section.items.map((item) => {
-                    const isDone = completedIds.has(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleItem(item.id)}
-                        className={`flex flex-col p-4 rounded-2xl border text-left transition-all ${
-                          isDone 
-                            ? 'bg-blue-50 border-blue-100 scale-[0.98]' 
-                            : 'bg-white border-gray-100 hover:border-gray-300'
-                        }`}
-                      >
-                        <span className="text-[10px] font-bold text-gray-400 uppercase mb-1">{item.category}</span>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className={`text-sm font-bold ${isDone ? 'text-blue-700' : 'text-gray-700'}`}>
-                            {item.detail}
-                          </span>
-                          {isDone ? <CheckCircle2 size={18} className="text-blue-500 shrink-0" /> : <Circle size={18} className="text-gray-200 shrink-0" />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {section.items.map((item) => {
+                      const isDone = completedIds.has(item.id);
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => toggleItem(item.id)}
+                          className={`flex flex-col p-4 rounded-2xl border text-left transition-all ${
+                            isDone
+                              ? 'bg-blue-50 border-blue-100 scale-[0.98]'
+                              : 'bg-white border-gray-100 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className="text-[10px] font-bold text-gray-400 uppercase mb-1">{item.category}</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`text-sm font-bold ${isDone ? 'text-blue-700' : 'text-gray-700'}`}>
+                              {item.detail}
+                            </span>
+                            {isDone ? <CheckCircle2 size={18} className="text-blue-500 shrink-0" /> : <Circle size={18} className="text-gray-200 shrink-0" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
