@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Map, BookOpen, Mic, Languages } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import Navbar from '@/components/Navbar';
+import BottomNav from '@/components/BottomNav';
 
-// --- スプレッドシートから抽出した全データ ---
 const ROADMAP_DATA = {
   pronunciation: {
     title: "発音",
@@ -100,7 +100,6 @@ export default function Roadmap() {
     const newSet = new Set(completedIds);
     if (isNowCompleted) newSet.add(id); else newSet.delete(id);
     setCompletedIds(newSet);
-
     await supabase.from('roadmap_progress').upsert({ item_key: id, is_completed: isNowCompleted }, { onConflict: 'item_key' });
   };
 
@@ -131,17 +130,13 @@ export default function Roadmap() {
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{section.items.length} Items Total</p>
                       </div>
                     </div>
-
                     <div className="flex-1 max-w-md">
                       <div className="flex justify-between mb-2">
                         <span className="text-sm font-bold text-gray-600">{progress}% Mastered</span>
                         <span className="text-sm font-bold text-blue-600">{doneCount} / {section.items.length}</span>
                       </div>
                       <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                        <div
-                          className="bg-blue-500 h-full transition-all duration-500 ease-out"
-                          style={{ width: `${progress}%` }}
-                        />
+                        <div className="bg-blue-500 h-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   </div>
@@ -154,16 +149,12 @@ export default function Roadmap() {
                           key={item.id}
                           onClick={() => toggleItem(item.id)}
                           className={`flex flex-col p-4 rounded-2xl border text-left transition-all ${
-                            isDone
-                              ? 'bg-blue-50 border-blue-100 scale-[0.98]'
-                              : 'bg-white border-gray-100 hover:border-gray-300'
+                            isDone ? 'bg-blue-50 border-blue-100 scale-[0.98]' : 'bg-white border-gray-100 hover:border-gray-300'
                           }`}
                         >
                           <span className="text-[10px] font-bold text-gray-400 uppercase mb-1">{item.category}</span>
                           <div className="flex items-center justify-between gap-2">
-                            <span className={`text-sm font-bold ${isDone ? 'text-blue-700' : 'text-gray-700'}`}>
-                              {item.detail}
-                            </span>
+                            <span className={`text-sm font-bold ${isDone ? 'text-blue-700' : 'text-gray-700'}`}>{item.detail}</span>
                             {isDone ? <CheckCircle2 size={18} className="text-blue-500 shrink-0" /> : <Circle size={18} className="text-gray-200 shrink-0" />}
                           </div>
                         </button>
@@ -174,8 +165,13 @@ export default function Roadmap() {
               );
             })}
           </div>
+
+          {/* スマホ用ボトムナビ余白 */}
+          <div className="h-20 md:hidden" />
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 }

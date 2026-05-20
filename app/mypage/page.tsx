@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import BottomNav from '@/components/BottomNav';
 import { Award, BookOpen, TrendingUp, Loader2, LayoutDashboard, ClipboardList, Map, Video } from 'lucide-react';
 
 type QuizResult = {
@@ -33,23 +34,18 @@ export default function MyPage() {
   useEffect(() => {
     const initialize = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) {
         router.push('/login');
         return;
       }
-
       setUser(user);
-
       const { data } = await supabase
         .from('quiz_results')
         .select('*')
         .order('taken_at', { ascending: false });
-
       setResults(data ?? []);
       setLoading(false);
     };
-
     initialize();
   }, []);
 
@@ -83,7 +79,7 @@ export default function MyPage() {
           <p className="text-sm text-gray-400 mt-1">{user?.email}</p>
         </div>
 
-        {/* ✅ ナビゲーションボタン */}
+        {/* ナビゲーションボタン */}
         <div className="grid grid-cols-2 gap-3 mb-8">
           {NAV_ITEMS.map((item) => (
             <Link
@@ -163,7 +159,12 @@ export default function MyPage() {
             </Link>
           </div>
         )}
+
+        {/* スマホ用ボトムナビ余白 */}
+        <div className="h-20 md:hidden" />
       </main>
+
+      <BottomNav />
     </div>
   );
 }

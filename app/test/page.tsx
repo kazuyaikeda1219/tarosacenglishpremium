@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
+import BottomNav from '@/components/BottomNav';
 import Link from 'next/link';
-// ClipboardCheck アイコンを追加インポート
 import { Book, GraduationCap, ArrowRight, Zap, BarChart3, ClipboardCheck } from 'lucide-react';
 
 const TEST_CATEGORIES = [
@@ -84,8 +84,8 @@ export default function TestPortal() {
 
                 <div className="space-y-3 flex-1">
                   {cat.items.map((item) => (
-                    <Link 
-                      key={item.id} 
+                    <Link
+                      key={item.id}
                       href={`/test/quiz?id=${item.id}`}
                       className="flex items-center justify-between p-4 bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 rounded-2xl transition-all group"
                     >
@@ -103,8 +103,13 @@ export default function TestPortal() {
               💡 Google フォームで作成した問題は、スプレッドシート経由で一括追加が可能です。
             </p>
           </div>
+
+          {/* スマホ用ボトムナビ余白 */}
+          <div className="h-20 md:hidden" />
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 }

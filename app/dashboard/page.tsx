@@ -10,6 +10,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid 
 } from 'recharts';
 import Navbar from '@/components/Navbar';
+import BottomNav from '@/components/BottomNav';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
@@ -17,7 +18,7 @@ function DashboardContent() {
   const [logs, setLogs] = useState<any[]>([]);
   const [totalProgress, setTotalProgress] = useState(0);
   const [user, setUser] = useState<any>(null);
-  const [showToast, setShowToast] = useState(false); // ✅ トースト表示フラグ
+  const [showToast, setShowToast] = useState(false);
   const supabase = createClient();
   const searchParams = useSearchParams();
 
@@ -35,7 +36,6 @@ function DashboardContent() {
     initialize();
   }, []);
 
-  // ✅ ログイン直後のトースト表示
   useEffect(() => {
     if (searchParams.get('loggedIn') === 'true') {
       setShowToast(true);
@@ -57,7 +57,6 @@ function DashboardContent() {
       .from('roadmap_progress')
       .select('*', { count: 'exact', head: true })
       .eq('is_completed', true);
-
     if (!error && count !== null) {
       const percentage = Math.round((count / TOTAL_ROADMAP_ITEMS) * 100);
       setTotalProgress(percentage);
@@ -89,15 +88,11 @@ function DashboardContent() {
       d.setDate(d.getDate() - i);
       return d.toISOString().split('T')[0];
     }).reverse();
-
     return days.map(date => {
       const dayTotal = logs
         .filter(log => log.study_date === date)
         .reduce((sum, log) => sum + Number(log.study_time_minutes), 0);
-      return { 
-        displayDate: date.split('-').slice(1).join('/'), 
-        minutes: dayTotal 
-      };
+      return { displayDate: date.split('-').slice(1).join('/'), minutes: dayTotal };
     });
   }, [logs]);
 
@@ -116,7 +111,7 @@ function DashboardContent() {
     const formData = new FormData(e.currentTarget);
     const hours = Number(formData.get('hours')) || 0;
     const mins = Number(formData.get('mins')) || 0;
-    
+
     const { error } = await supabase.from('study_logs').insert([{
       study_date: formData.get('date'),
       study_time_minutes: (hours * 60) + mins,
@@ -135,7 +130,7 @@ function DashboardContent() {
     <div className="min-h-screen bg-[#f8fafc]">
       <Navbar />
 
-      {/* ✅ ログイン完了トースト */}
+      {/* ログイン完了トースト */}
       <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
         showToast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
       }`}>
@@ -152,21 +147,12 @@ function DashboardContent() {
               <h1 className="text-3xl font-black text-gray-900 tracking-tight">Learning Insights</h1>
               <p className="text-gray-500 font-medium">Keep it up!</p>
             </div>
-            
             <div className="flex flex-wrap justify-center gap-3">
-              <Link 
-                href="/roadmap" 
-                className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95"
-              >
-                <Map size={18} />
-                Roadmap
+              <Link href="/roadmap" className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95">
+                <Map size={18} /> Roadmap
               </Link>
-              <Link 
-                href="/library" 
-                className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
-              >
-                <BookOpen size={18} />
-                Open TEP Library
+              <Link href="/library" className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95">
+                <BookOpen size={18} /> Open TEP Library
               </Link>
             </div>
           </header>
@@ -269,7 +255,7 @@ function DashboardContent() {
             </form>
           </div>
 
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-4">
             <div className="p-5 border-b border-gray-100 flex justify-between items-center">
               <h3 className="font-bold text-gray-700">Recent Activity</h3>
             </div>
@@ -297,10 +283,7 @@ function DashboardContent() {
                       </td>
                       <td className="p-5 text-gray-400 italic">{log.note || '-'}</td>
                       <td className="p-5 text-center">
-                        <button 
-                          onClick={() => deleteLog(log.id)}
-                          className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        >
+                        <button onClick={() => deleteLog(log.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
                           <Trash2 size={16} />
                         </button>
                       </td>
@@ -310,9 +293,22 @@ function DashboardContent() {
               </table>
             </div>
           </div>
+
+          {/* スマホ用ボトムナビ余白 */}
+          <div className="h-20 md:hidden" />
         </div>
       </div>
+
+      <BottomNav />
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f8fafc]" />}>
+      <DashboardContent />
+    </Suspense>
   );
 }
 
@@ -325,12 +321,5 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode, label: string
         <p className="text-2xl font-black text-gray-900 leading-none">{value}</p>
       </div>
     </div>
-  );
-}
-export default function Dashboard() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#f8fafc]" />}>
-      <DashboardContent />
-    </Suspense>
   );
 }
