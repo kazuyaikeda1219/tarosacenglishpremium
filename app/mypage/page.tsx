@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import BottomNav from '@/components/BottomNav';
-import { Award, BookOpen, TrendingUp, Loader2, LayoutDashboard, ClipboardList, Map, Video } from 'lucide-react';
+import { Award, BookOpen, TrendingUp, Loader2, LayoutDashboard, ClipboardList, Map } from 'lucide-react';
 
 type QuizResult = {
   id: string;
@@ -21,7 +21,6 @@ const NAV_ITEMS = [
   { label: 'ダッシュボード', href: '/dashboard', icon: <LayoutDashboard size={18} />, color: 'bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100' },
   { label: 'テスト', href: '/test', icon: <ClipboardList size={18} />, color: 'bg-indigo-50 text-indigo-600 border-indigo-100 hover:bg-indigo-100' },
   { label: 'ロードマップ', href: '/roadmap', icon: <Map size={18} />, color: 'bg-purple-50 text-purple-600 border-purple-100 hover:bg-purple-100' },
-  { label: '動画視聴', href: '/library', icon: <Video size={18} />, color: 'bg-pink-50 text-pink-600 border-pink-100 hover:bg-pink-100' },
 ];
 
 export default function MyPage() {
@@ -73,22 +72,21 @@ export default function MyPage() {
       <Navbar />
       <main className="max-w-2xl mx-auto p-6 mt-4">
 
-        {/* ヘッダー */}
         <div className="mb-6">
           <h1 className="text-2xl font-black text-gray-900">マイページ</h1>
           <p className="text-sm text-gray-400 mt-1">{user?.email}</p>
         </div>
 
         {/* ナビゲーションボタン */}
-        <div className="grid grid-cols-2 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-8">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-4 rounded-2xl border font-bold text-sm transition-all ${item.color}`}
+              className={`flex items-center justify-center gap-2 px-3 py-4 rounded-2xl border font-bold text-sm transition-all ${item.color}`}
             >
               {item.icon}
-              {item.label}
+              <span className="hidden sm:inline">{item.label}</span>
             </Link>
           ))}
         </div>
@@ -160,7 +158,6 @@ export default function MyPage() {
           </div>
         )}
 
-        {/* スマホ用ボトムナビ余白 */}
         <div className="h-20 md:hidden" />
       </main>
 

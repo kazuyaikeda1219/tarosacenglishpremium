@@ -9,7 +9,7 @@ import { Book, GraduationCap, ArrowRight, Zap, BarChart3, ClipboardCheck } from 
 const TEST_CATEGORIES = [
   {
     id: 'level-check',
-    title: 'Level Check',
+    title: 'レベルチェック',
     icon: <BarChart3 className="text-green-500" />,
     description: '現在の実力を測定し、最適な学習プランを確認します。',
     items: [
@@ -20,7 +20,7 @@ const TEST_CATEGORIES = [
   },
   {
     id: 'vocab',
-    title: 'Vocab Check',
+    title: '単語チェック',
     icon: <Zap className="text-orange-500" />,
     description: '単語の定着度を4択テストで確認します。',
     items: [
@@ -31,7 +31,7 @@ const TEST_CATEGORIES = [
   },
   {
     id: 'grammar',
-    title: 'Grammar Check',
+    title: '文法チェック',
     icon: <GraduationCap className="text-blue-500" />,
     description: '英文法の理解度をチャプター別に測定します。',
     items: [
@@ -42,7 +42,7 @@ const TEST_CATEGORIES = [
   },
   {
     id: 'progress-check',
-    title: 'Progress Check',
+    title: 'プログレスチェック',
     icon: <ClipboardCheck className="text-purple-500" />,
     description: '定期的な進捗確認テストで、日々の成長を測定します。',
     items: [
@@ -64,7 +64,7 @@ export default function TestPortal() {
         <div className="max-w-4xl mx-auto">
           <header className="mb-10 mt-4">
             <h1 className="text-4xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-              <Book className="text-indigo-600" size={36} /> TEP Check Tests
+              <Book className="text-indigo-600" size={36} /> テスト一覧
             </h1>
             <p className="text-gray-500 font-medium mt-2">参考書の進捗に合わせて、知識のアウトプットを行いましょう。</p>
           </header>
@@ -78,7 +78,7 @@ export default function TestPortal() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-black text-gray-900">{cat.title}</h2>
-                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{cat.description}</p>
+                    <p className="text-xs text-gray-400 font-medium mt-0.5">{cat.description}</p>
                   </div>
                 </div>
 
@@ -104,7 +104,6 @@ export default function TestPortal() {
             </p>
           </div>
 
-          {/* スマホ用ボトムナビ余白 */}
           <div className="h-20 md:hidden" />
         </div>
       </div>

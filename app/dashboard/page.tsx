@@ -144,29 +144,26 @@ function DashboardContent() {
         <div className="max-w-2xl mx-auto">
           <header className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
             <div className="text-center md:text-left">
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Learning Insights</h1>
-              <p className="text-gray-500 font-medium">Keep it up!</p>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">学習ダッシュボード</h1>
+              <p className="text-gray-500 font-medium">継続は力なり！</p>
             </div>
             <div className="flex flex-wrap justify-center gap-3">
               <Link href="/roadmap" className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95">
-                <Map size={18} /> Roadmap
-              </Link>
-              <Link href="/library" className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95">
-                <BookOpen size={18} /> Open TEP Library
+                <Map size={18} /> ロードマップ
               </Link>
             </div>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <StatCard icon={<Flame className="text-orange-500" />} label="Total Study Days" value={`${totalDays} Days`} />
-            <StatCard icon={<Clock className="text-blue-500" />} label="Total Time" value={`${totalHours} hrs`} />
-            <StatCard icon={<BarChart3 className="text-green-500" />} label="Current Level" value={`${totalProgress}%`} />
+            <StatCard icon={<Flame className="text-orange-500" />} label="学習日数" value={`${totalDays} 日`} />
+            <StatCard icon={<Clock className="text-blue-500" />} label="累計学習時間" value={`${totalHours} 時間`} />
+            <StatCard icon={<BarChart3 className="text-green-500" />} label="習熟度" value={`${totalProgress}%`} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
               <h3 className="text-xs font-bold mb-6 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-                <PieIcon size={16} /> Material Distribution
+                <PieIcon size={16} /> 教材別学習時間
               </h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -184,7 +181,7 @@ function DashboardContent() {
 
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
               <h3 className="text-xs font-bold mb-6 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-                <TrendingUp size={16} /> Weekly Activity (min)
+                <TrendingUp size={16} /> 直近7日間の学習（分）
               </h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -201,26 +198,26 @@ function DashboardContent() {
 
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200 mb-10">
             <h3 className="text-xs font-bold mb-5 flex items-center gap-2 text-gray-400 uppercase tracking-widest">
-              <PlusCircle size={18} /> New Entry
+              <PlusCircle size={18} /> 学習ログを追加
             </h3>
             <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">Date</label>
+                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">日付</label>
                 <input name="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} className="border border-gray-200 p-2.5 rounded-xl text-sm bg-white outline-none" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">Duration</label>
+                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">学習時間</label>
                 <div className="flex items-center gap-1">
                   <select name="hours" className="border border-gray-200 p-2.5 rounded-xl text-sm bg-white outline-none">
-                    {Array.from({ length: 7 }, (_, i) => (<option key={i} value={i}>{i} H</option>))}
+                    {Array.from({ length: 7 }, (_, i) => (<option key={i} value={i}>{i} 時間</option>))}
                   </select>
                   <select name="mins" className="border border-gray-200 p-2.5 rounded-xl text-sm bg-white outline-none">
-                    {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((m) => (<option key={m} value={m}>{m} min</option>))}
+                    {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((m) => (<option key={m} value={m}>{m} 分</option>))}
                   </select>
                 </div>
               </div>
               <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
-                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">Material</label>
+                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">教材</label>
                 <select name="category" className="border border-gray-200 p-2.5 rounded-xl text-sm bg-white outline-none w-full" required>
                   <option value="Mr.Evine中学英文法">Mr.Evine中学英文法</option>
                   <option value="総合英語Evergreen">総合英語Evergreen</option>
@@ -246,28 +243,28 @@ function DashboardContent() {
                 </select>
               </div>
               <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
-                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">Note</label>
+                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase">メモ</label>
                 <input name="note" type="text" placeholder="Ch.3など" className="border border-gray-200 p-2.5 rounded-xl text-sm bg-white outline-none" />
               </div>
               <button type="submit" className="bg-blue-600 text-white px-8 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-md">
-                Add Log
+                追加
               </button>
             </form>
           </div>
 
           <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-4">
-            <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="font-bold text-gray-700">Recent Activity</h3>
+            <div className="p-5 border-b border-gray-100">
+              <h3 className="font-bold text-gray-700">最近の学習記録</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-bold tracking-widest border-b">
-                    <th className="p-5">Date</th>
-                    <th className="p-5">Material</th>
-                    <th className="p-5 text-right">Duration</th>
-                    <th className="p-5">Note</th>
-                    <th className="p-5 text-center">Action</th>
+                    <th className="p-5">日付</th>
+                    <th className="p-5">教材</th>
+                    <th className="p-5 text-right">時間</th>
+                    <th className="p-5">メモ</th>
+                    <th className="p-5 text-center">操作</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 text-sm">
@@ -278,8 +275,8 @@ function DashboardContent() {
                         <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">{log.category}</span>
                       </td>
                       <td className="p-5 font-bold text-right">
-                        {Math.floor(log.study_time_minutes / 60) > 0 && `${Math.floor(log.study_time_minutes / 60)}h `}
-                        {log.study_time_minutes % 60}min
+                        {Math.floor(log.study_time_minutes / 60) > 0 && `${Math.floor(log.study_time_minutes / 60)}時間`}
+                        {log.study_time_minutes % 60 > 0 && `${log.study_time_minutes % 60}分`}
                       </td>
                       <td className="p-5 text-gray-400 italic">{log.note || '-'}</td>
                       <td className="p-5 text-center">
@@ -294,7 +291,6 @@ function DashboardContent() {
             </div>
           </div>
 
-          {/* スマホ用ボトムナビ余白 */}
           <div className="h-20 md:hidden" />
         </div>
       </div>

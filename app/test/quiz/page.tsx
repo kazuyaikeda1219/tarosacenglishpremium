@@ -25,17 +25,18 @@ function QuizContent() {
 
   // quizId から category / chapter を解決するヘルパー
   const resolveQuizMeta = (id: string | null) => {
-    let category = 'LevelCheck';
-    let chapter = 'Grammar';
-    if (id === 'vocab-basic') {
-      chapter = 'Vocab-intro';
-    } else if (id === 'vocab-inter') {
-      chapter = 'Vocab-inter';
-    } else if (id?.startsWith('progress-')) {
-      category = 'ProgressCheck';
-      chapter = id.charAt(0).toUpperCase() + id.slice(1);
+    if (id === 'vocab-basic') return { category: 'LevelCheck', chapter: 'Vocab-intro' };
+    if (id === 'vocab-inter') return { category: 'LevelCheck', chapter: 'Vocab-inter' };
+    if (id === 'duo-s1') return { category: 'VocabCheck', chapter: 'Duo-s1' };
+    if (id === 'duo-s2') return { category: 'VocabCheck', chapter: 'Duo-s2' };
+    if (id === 'kiku-b1') return { category: 'VocabCheck', chapter: 'Kiku-b1' };
+    if (id === 'evine-c1') return { category: 'GrammarCheck', chapter: 'Evine-c1' };
+    if (id === 'evine-c2') return { category: 'GrammarCheck', chapter: 'Evine-c2' };
+    if (id === 'ever-rel') return { category: 'GrammarCheck', chapter: 'Ever-rel' };
+    if (id?.startsWith('progress-')) {
+      return { category: 'ProgressCheck', chapter: id.charAt(0).toUpperCase() + id.slice(1) };
     }
-    return { category, chapter };
+    return { category: 'LevelCheck', chapter: 'Grammar' };
   };
 
   useEffect(() => {
@@ -130,27 +131,14 @@ function QuizContent() {
   };
 
   const nextQuestion = () => {
-    const q = questions[currentIndex];
-    const isTextType = q.q_type === 'text';
-
-    // 最後の問題かどうかを判定
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setSelectedOption(null);
       setUserInput('');
       setIsAnswered(false);
     } else {
-      // ✅ 最後の問題の正誤を考慮してfinalScoreを計算
-      // （setScore は非同期なので、現在の問題の正誤をここで判定する）
-      const lastQuestionCorrect = isTextType
-        ? userInput.trim().toLowerCase() === (q.correct_text || '').trim().toLowerCase()
-        : selectedOption === q.correct_option;
-
-      const finalScore = lastQuestionCorrect ? score + 1 : score;
-
-      saveResult(finalScore, questions.length);
-      setScore(finalScore); // 表示用にもセット
-      setCurrentIndex(prev => prev + 1); // 終了画面へ
+      saveResult(score, questions.length);
+      setCurrentIndex(prev => prev + 1);
     }
   };
 

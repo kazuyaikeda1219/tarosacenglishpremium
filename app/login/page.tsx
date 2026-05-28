@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
@@ -22,6 +22,7 @@ export default function LoginPage() {
         },
       },
     });
+    if (error) setLoading(false);
   };
 
   // ✅ 匿名ログイン

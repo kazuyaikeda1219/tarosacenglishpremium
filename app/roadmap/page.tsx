@@ -85,10 +85,13 @@ const ROADMAP_DATA = {
 
 export default function Roadmap() {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [userId, setUserId] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
     async function loadProgress() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setUserId(user.id);
       const { data } = await supabase.from('roadmap_progress').select('item_key').eq('is_completed', true);
       if (data) setCompletedIds(new Set(data.map(d => d.item_key)));
     }
@@ -96,11 +99,15 @@ export default function Roadmap() {
   }, []);
 
   const toggleItem = async (id: string) => {
+    if (!userId) return;
     const isNowCompleted = !completedIds.has(id);
     const newSet = new Set(completedIds);
     if (isNowCompleted) newSet.add(id); else newSet.delete(id);
     setCompletedIds(newSet);
-    await supabase.from('roadmap_progress').upsert({ item_key: id, is_completed: isNowCompleted }, { onConflict: 'item_key' });
+    await supabase.from('roadmap_progress').upsert(
+      { item_key: id, is_completed: isNowCompleted, user_id: userId },
+      { onConflict: 'user_id,item_key' }
+    );
   };
 
   return (
