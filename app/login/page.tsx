@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { Loader2, Star, UserX } from 'lucide-react';
+import { Loader2, Star, UserX, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [guestLoading, setGuestLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // /login?error=unauthorized で来た場合にエラー表示
+  const isUnauthorized = searchParams.get('error') === 'unauthorized';
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -25,7 +29,6 @@ export default function LoginPage() {
     if (error) setLoading(false);
   };
 
-  // ✅ 匿名ログイン
   const handleGuestLogin = async () => {
     setGuestLoading(true);
     const { error } = await supabase.auth.signInAnonymously();
@@ -53,6 +56,20 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+
+        {/* 未登録アカウントエラー */}
+        {isUnauthorized && (
+          <div className="mb-4 flex items-start gap-3 bg-red-50 border border-red-100 text-red-600 rounded-2xl px-5 py-4">
+            <AlertCircle size={18} className="shrink-0 mt-0.5" />
+            <div>
+              <p className="font-black text-sm">アクセスが許可されていません</p>
+              <p className="text-xs font-medium mt-0.5 text-red-400">
+                このGoogleアカウントはTEPに登録されていません。担当者にお問い合わせください。
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white py-10 px-8 shadow-xl shadow-gray-200/50 rounded-[2.5rem] border border-gray-100 space-y-4">
 
           {/* Googleログイン */}

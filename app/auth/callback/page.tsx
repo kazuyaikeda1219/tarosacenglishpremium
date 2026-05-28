@@ -14,8 +14,24 @@ export default function AuthCallbackPage() {
       if (event === 'SIGNED_IN' && session) {
         subscription.unsubscribe();
 
-        // ✅ profilesレコードを自動作成（既にあればスキップ）
         const user = session.user;
+        const email = user.email?.toLowerCase();
+
+        // ── ① ホワイトリストチェック ──────────────────────────
+        const { data: allowed, error: wlError } = await supabase
+          .from('allowed_emails')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+
+        // allowed_emails テーブルに存在しない → 強制ログアウト
+        if (wlError || !allowed) {
+          await supabase.auth.signOut();
+          router.push('/login?error=unauthorized');
+          return;
+        }
+
+        // ── ② profilesレコードを自動作成（既にあればスキップ） ──
         const { data: existing } = await supabase
           .from('profiles')
           .select('id')
@@ -49,7 +65,7 @@ export default function AuthCallbackPage() {
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
       <div className="text-center">
         <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
-        <p className="text-gray-500 font-medium">ログイン中...</p>
+        <p className="text-gray-500 font-medium">認証を確認中...</p>
       </div>
     </div>
   );
