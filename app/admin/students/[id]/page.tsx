@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { useRequireAdmin } from '@/utils/useRequireAdmin';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { ArrowLeft, Clock, TrendingUp, Calendar, Lock, Save, Loader2, CheckCircle2 } from 'lucide-react';
 
-const ADMIN_PASSCODE = 'tep2026';
 const TOTAL_ROADMAP_ITEMS = 145;
 
 const LEARNING_TYPES = [
@@ -45,9 +45,7 @@ const EMPTY_SURVEY: SurveyData = {
 };
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [passcode, setPasscode] = useState('');
-  const [authError, setAuthError] = useState(false);
+  const adminAuth = useRequireAdmin();
   const [activeTab, setActiveTab] = useState<'learning' | 'survey'>('learning');
   const [student, setStudent] = useState<any>(null);
   const [logs, setLogs] = useState<any[]>([]);
@@ -59,14 +57,8 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
   const supabase = createClient();
 
   useEffect(() => {
-    if (isAuthenticated) fetchStudentDetail();
-  }, [isAuthenticated]);
-
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passcode === ADMIN_PASSCODE) { setIsAuthenticated(true); setAuthError(false); }
-    else { setAuthError(true); setPasscode(''); }
-  };
+    if (adminAuth === 'ok') fetchStudentDetail();
+  }, [adminAuth]);
 
   const fetchStudentDetail = async () => {
     setLoading(true);
@@ -140,27 +132,26 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
     }));
   };
 
-  if (!isAuthenticated) {
+  if (adminAuth === 'loading') {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <Loader2 className="animate-spin text-indigo-400" size={36} />
+      </div>
+    );
+  }
+
+  if (adminAuth === 'denied') {
     return (
       <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center px-6">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-700">
-              <Lock className="text-indigo-400" size={32} />
-            </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">TEP Admin Access</h1>
+        <div className="w-full max-w-md text-center">
+          <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-700">
+            <Lock className="text-indigo-400" size={32} />
           </div>
-          <form onSubmit={handleVerify} className="space-y-4">
-            <input
-              type="password"
-              className="w-full bg-slate-800 border border-slate-700 text-white px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-center text-xl tracking-[1em]"
-              value={passcode}
-              onChange={e => setPasscode(e.target.value)}
-              autoFocus
-            />
-            {authError && <p className="text-red-400 text-sm font-bold text-center">パスコードが違います</p>}
-            <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all">Enter</button>
-          </form>
+          <h1 className="text-2xl font-black text-white tracking-tight">アクセス権限がありません</h1>
+          <p className="text-slate-500 text-sm mt-2 font-medium">この画面は管理者専用です。</p>
+          <Link href="/dashboard" className="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all">
+            ダッシュボードに戻る
+          </Link>
         </div>
       </div>
     );

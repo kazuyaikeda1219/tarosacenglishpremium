@@ -3,6 +3,7 @@
 import Navbar from '@/components/Navbar';
 import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { useRequireAdmin } from '@/utils/useRequireAdmin';
 import {
   ArrowLeft, Users, Clock, ChevronRight, Lock, Upload, Loader2, CheckCircle,
   LayoutDashboard, BookOpen, UserCheck, Plus, Pencil, Trash2, X, Save,
@@ -63,45 +64,34 @@ const EMPTY_QUESTION: Omit<Question, 'id' | 'created_at'> = {
 };
 
 const TOTAL_ROADMAP_ITEMS = 145;
-const ADMIN_PASSCODE = 'tep2026';
 
 // ── メインコンポーネント ─────────────────────────────────
 export default function AdminDashboard() {
-  const [passcode, setPasscode] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authError, setAuthError] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('summary');
+  const adminAuth = useRequireAdmin();
 
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passcode === ADMIN_PASSCODE) { setIsAuthenticated(true); setAuthError(false); }
-    else { setAuthError(true); setPasscode(''); }
-  };
+  // 認証チェック中
+  if (adminAuth === 'loading') {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <Loader2 className="animate-spin text-indigo-400" size={36} />
+      </div>
+    );
+  }
 
-  if (!isAuthenticated) {
+  // 管理者以外
+  if (adminAuth === 'denied') {
     return (
       <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center px-6">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-700">
-              <Lock className="text-indigo-400" size={32} />
-            </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">TEP Admin Access</h1>
-            <p className="text-slate-500 text-sm mt-1 font-medium">管理者専用エリア</p>
+        <div className="w-full max-w-md text-center">
+          <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-700">
+            <Lock className="text-indigo-400" size={32} />
           </div>
-          <form onSubmit={handleVerify} className="space-y-4">
-            <input
-              type="password"
-              className="w-full bg-slate-800 border border-slate-700 text-white px-6 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-center text-xl tracking-[1em]"
-              value={passcode}
-              onChange={(e) => setPasscode(e.target.value)}
-              autoFocus
-            />
-            {authError && <p className="text-red-400 text-sm font-bold text-center">パスコードが違います</p>}
-            <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all">
-              Enter Dashboard
-            </button>
-          </form>
+          <h1 className="text-2xl font-black text-white tracking-tight">アクセス権限がありません</h1>
+          <p className="text-slate-500 text-sm mt-2 font-medium">この画面は管理者専用です。</p>
+          <Link href="/dashboard" className="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all">
+            ダッシュボードに戻る
+          </Link>
         </div>
       </div>
     );
@@ -390,7 +380,7 @@ function StudentsTab() {
           <div className="w-11 h-11 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600"><Mail size={22} /></div>
           <div>
             <h3 className="text-lg font-black text-gray-900">Googleログイン ホワイトリスト</h3>
-            <p className="text-xs text-gray-400 font-medium">登録したメールアドレスのGoogleアカウントのみログイン可能</p>
+            <p className="text-xs text-gray-400 font-medium">登録したメールアドレスのGoogleアカウントのみログイン可能（ドメイン不問）</p>
           </div>
         </div>
 
@@ -398,7 +388,7 @@ function StudentsTab() {
         <div className="flex gap-3 mb-6">
           <input
             type="email"
-            placeholder="student@gmail.com"
+            placeholder="student@example.com（Gmail以外も可）"
             value={newEmail}
             onChange={e => { setNewEmail(e.target.value); setEmailError(''); }}
             onKeyDown={e => e.key === 'Enter' && addEmail()}

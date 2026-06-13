@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { Loader2, Star, UserX, AlertCircle } from 'lucide-react';
+import { Loader2, Star, AlertCircle, Mail, CheckCircle2 } from 'lucide-react';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
-  const [guestLoading, setGuestLoading] = useState(false);
-  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [mailLoading, setMailLoading] = useState(false);
+  const [mailSent, setMailSent] = useState(false);
+  const [mailError, setMailError] = useState('');
   const searchParams = useSearchParams();
   const supabase = createClient();
 
@@ -29,17 +31,36 @@ export default function LoginPage() {
     if (error) setLoading(false);
   };
 
-  const handleGuestLogin = async () => {
-    setGuestLoading(true);
-    const { error } = await supabase.auth.signInAnonymously();
-
-    if (error) {
-      console.error('ゲストログイン失敗:', error.message);
-      setGuestLoading(false);
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMailError('');
+    const target = email.trim().toLowerCase();
+    if (!target.includes('@')) {
+      setMailError('有効なメールアドレスを入力してください');
       return;
     }
-
-    router.push('/dashboard?loggedIn=true');
+    setMailLoading(true);
+    try {
+      const res = await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: target,
+          redirectTo: `${window.location.origin}/auth/callback`,
+        }),
+      });
+      if (res.ok) {
+        setMailSent(true);
+      } else if (res.status === 403) {
+        setMailError('このメールアドレスはTEPに登録されていません。担当者にお問い合わせください。');
+      } else {
+        setMailError('送信に失敗しました。時間をおいて再度お試しください。');
+      }
+    } catch {
+      setMailError('送信に失敗しました。時間をおいて再度お試しください。');
+    } finally {
+      setMailLoading(false);
+    }
   };
 
   return (
@@ -52,7 +73,7 @@ export default function LoginPage() {
           <span className="text-2xl font-black text-gray-900 tracking-tighter">TEP Portal</span>
         </a>
         <h2 className="text-center text-3xl font-black text-gray-900 tracking-tight">Student Login</h2>
-        <p className="text-center text-gray-400 mt-2 font-medium">Googleアカウントでログインしてください</p>
+        <p className="text-center text-gray-400 mt-2 font-medium">登録済みのメールアドレスでログインしてください</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -64,7 +85,7 @@ export default function LoginPage() {
             <div>
               <p className="font-black text-sm">アクセスが許可されていません</p>
               <p className="text-xs font-medium mt-0.5 text-red-400">
-                このGoogleアカウントはTEPに登録されていません。担当者にお問い合わせください。
+                このアカウントはTEPに登録されていません。担当者にお問い合わせください。
               </p>
             </div>
           </div>
@@ -75,7 +96,7 @@ export default function LoginPage() {
           {/* Googleログイン */}
           <button
             onClick={handleGoogleLogin}
-            disabled={loading || guestLoading}
+            disabled={loading}
             className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white border-2 border-gray-200 rounded-2xl font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
           >
             {loading ? (
@@ -100,24 +121,54 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-gray-100" />
           </div>
 
-          {/* ゲストログイン */}
-          <button
-            onClick={handleGuestLogin}
-            disabled={loading || guestLoading}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 hover:border-gray-200 transition-all active:scale-95 disabled:opacity-50"
-          >
-            {guestLoading ? (
-              <Loader2 className="animate-spin text-gray-400" size={22} />
-            ) : (
-              <>
-                <UserX size={22} />
-                ゲストとして試す
-              </>
-            )}
-          </button>
+          {/* メールログイン（マジックリンク） */}
+          {mailSent ? (
+            <div className="flex flex-col items-center gap-3 bg-green-50 border border-green-100 rounded-2xl px-5 py-6 text-center">
+              <CheckCircle2 className="text-green-500" size={28} />
+              <p className="font-black text-sm text-green-700">ログインリンクを送信しました</p>
+              <p className="text-xs font-medium text-green-600">
+                <span className="font-bold">{email.trim().toLowerCase()}</span> 宛のメールを開き、リンクをクリックしてログインしてください。
+              </p>
+              <button
+                onClick={() => { setMailSent(false); setEmail(''); }}
+                className="text-xs text-indigo-600 font-bold underline mt-1"
+              >
+                別のメールアドレスを使う
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleMagicLink} className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={e => { setEmail(e.target.value); setMailError(''); }}
+                placeholder="your-email@example.com"
+                className="w-full border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 transition-all"
+              />
+              <button
+                type="submit"
+                disabled={mailLoading}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+              >
+                {mailLoading ? (
+                  <Loader2 className="animate-spin" size={22} />
+                ) : (
+                  <>
+                    <Mail size={20} />
+                    メールでログインリンクを送る
+                  </>
+                )}
+              </button>
+              {mailError && (
+                <p className="flex items-start gap-2 text-red-500 text-xs font-bold">
+                  <AlertCircle size={14} className="shrink-0 mt-0.5" />{mailError}
+                </p>
+              )}
+            </form>
+          )}
 
           <p className="text-center text-xs text-gray-400 font-medium pt-1">
-            ※ ゲストの受験履歴はアカウント未登録のため保存されません
+            ※ TEPに登録されたメールアドレスのみログインできます（Googleアカウント不要のメールログインにも対応）
           </p>
         </div>
       </div>
